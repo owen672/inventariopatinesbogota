@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario Patines Bogotá</title>
+  <style>
+    :root {
+      --verde: #2ecc71;
+      --verde-oscuro: #27ae60;
+      --negro: #000000;
+      --blanco: #ffffff;
+      --gris: #2c2c2c;
+      --azul: #3498db;
+      --azul-oscuro: #2980b9;
+      --naranja: #f39c12;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--negro);
+      color: var(--blanco);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: var(--gris);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--verde);
+    }
+
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group input, .form-group button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+    }
+
+    .form-group input {
+      flex: 1;
+      border: 1px solid #ccc;
+      background-color: #1e1e1e;
+      color: var(--blanco);
+    }
+
+    .form-group button {
+      background-color: var(--verde);
+      color: var(--blanco);
+      border: none;
+      cursor: pointer;
+    }
+
+    .form-group button:hover {
+      background-color: var(--verde-oscuro);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #1e1e1e;
+      color: var(--blanco);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #444;
+      text-align: center;
+    }
+
+    th {
+      background-color: var(--verde-oscuro);
+      color: var(--blanco);
+    }
+
+    .btn {
+      padding: 5px 10px;
+      margin: 2px;
+      border-radius: 4px;
+      color: var(--blanco);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-delete { background-color: #e74c3c; }
+    .btn-edit { background-color: var(--naranja); }
+    .btn-traida { background-color: var(--azul); }
+    .btn-export { background-color: var(--azul); }
+    .btn-import { background-color: var(--verde); }
+    .btn-clear { background-color: #7f8c8d; }
+    .btn-increase { background-color: #8e44ad; }
+
+    .marcado-traido {
+      background-color: #1a3d2e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Inventario Patines Bogotá</h1>
+
+    <div class="form-group">
+      <input type="text" id="codigo" placeholder="Código de barras" autofocus>
+      <input type="text" id="nombre" placeholder="Nombre del producto">
+      <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
+      <button onclick="agregarProducto()">Agregar</button>
+    </div>
+
+    <div class="form-group">
+      <button class="btn btn-export" onclick="exportarExcel()">Exportar a Excel</button>
+      <input type="file" id="importarArchivo" accept=".csv" onchange="importarCSV(this)">
+    </div>
+
+    <div class="form-group">
+      <button class="btn btn-clear" onclick="limpiarCantidades()">Limpiar Cantidades</button>
+      <button class="btn btn-increase" onclick="aumentarCantidades()">Aumentar Cantidades</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-inventario"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const inventario = [];
+
+    document.getElementById("codigo").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const codigo = this.value.trim();
+        if (!codigo) return;
+
+        const producto = inventario.find(p => p.codigo === codigo);
+        if (producto) {
+          producto.cantidad++;
+          actualizarTabla();
+          limpiarCampos();
+        } else {
+          document.getElementById("nombre").focus();
+        }
+      }
+    });
+
+    function agregarProducto() {
+      const codigo = document.getElementById("codigo").value.trim();
+      const nombre = document.getElementById("nombre").value.trim();
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+      if (!codigo || !nombre || cantidad <= 0) return;
+
+      const existente = inventario.find(p => p.codigo === codigo);
+      if (existente) {
+        existente.cantidad += cantidad;
+      } else {
+        inventario.push({ codigo, nombre, cantidad, traido: false });
+      }
+      actualizarTabla();
+      limpiarCampos();
+    }
+
+    function limpiarCampos() {
+      document.getElementById("codigo").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("cantidad").value = 1;
+      document.getElementById("codigo").focus();
+    }
+
+    function restarCantidad(index) {
+      if (inventario[index].cantidad > 0) inventario[index].cantidad--;
+      actualizarTabla();
+    }
+
+    function eliminarProducto(index) {
+      inventario.splice(index, 1);
+      actualizarTabla();
+    }
+
+    function renombrarProducto(index) {
+      const nuevo = prompt("Nuevo nombre del producto:");
+      if (nuevo) {
+        inventario[index].nombre = nuevo.trim();
+        actualizarTabla();
+      }
+    }
+
+    function marcarTraida(index) {
+      inventario[index].traido = true;
+      actualizarTabla();
+    }
+
+    function limpiarCantidades() {
+      inventario.forEach(p => p.cantidad = 0);
+      actualizarTabla();
+    }
+
+    function aumentarCantidades() {
+      const valor = parseInt(prompt("¿Cuánto deseas aumentar a cada producto?", "1"));
+      if (!isNaN(valor)) {
+        inventario.forEach(p => p.cantidad += valor);
+        actualizarTabla();
+      }
+    }
+
+    function actualizarTabla() {
+      const tabla = document.getElementById("tabla-inventario");
+      tabla.innerHTML = "";
+      inventario.forEach((p, i) => {
+        const fila = document.createElement("tr");
+        if (p.traido) fila.classList.add("marcado-traido");
+        fila.innerHTML = `
+          <td>${p.codigo}</td>
+          <td>${p.nombre}</td>
+          <td>${p.cantidad}</td>
+          <td>
+            <button class="btn btn-traida" onclick="marcarTraida(${i})">Traída</button>
+            <button class="btn btn-edit" onclick="renombrarProducto(${i})">Renombrar</button>
+            <button class="btn btn-delete" onclick="restarCantidad(${i})">-</button>
+            <button class="btn btn-delete" onclick="eliminarProducto(${i})">Eliminar</button>
+          </td>`;
+        tabla.appendChild(fila);
+      });
+    }
+
+    function exportarExcel() {
+      let tabla = "Código,Nombre,Cantidad,Traído\n";
+      inventario.forEach(p => {
+        tabla += `${p.codigo},${p.nombre},${p.cantidad},${p.traido ? 'Si' : 'No'}\n`;
+      });
+      const blob = new Blob([tabla], { type: 'text/csv;charset=utf-8;' });
+      const fecha = new Date();
+      const nombre = `inventario_patines_${fecha.toISOString().slice(0, 16).replace(/[:T]/g, '-')}.csv`;
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = nombre;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function importarCSV(input) {
+      const archivo = input.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function(e) {
+        const lineas = e.target.result.split("\n").slice(1);
+        lineas.forEach(linea => {
+          if (linea.trim() === '') return;
+          const [codigo, nombre, cantidad, traido] = linea.split(',');
+          inventario.push({
+            codigo: codigo.trim(),
+            nombre: nombre.trim(),
+            cantidad: parseInt(cantidad.trim()),
+            traido: traido.trim().toLowerCase() === 'si'
+          });
+        });
+        actualizarTabla();
+      };
+      lector.readAsText(archivo);
+    }
+  </script>
+</body>
+</html>
