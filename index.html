@@ -155,6 +155,7 @@
     <div class="form-group">
       <button class="btn-gris" onclick="limpiarCantidades()">Limpiar Cantidades</button>
       <button class="btn-purpura" onclick="aumentarCantidades()">Aumentar Cantidades</button>
+      <button class="btn-rojo" onclick="borrarTodo()">Borrar Todo</button> <!-- NUEVO BOTÓN -->
     </div>
 
     <table>
@@ -250,6 +251,13 @@
       const valor = parseInt(prompt('¿Cuánto quieres aumentar a cada producto?', '1'));
       if (!isNaN(valor)) {
         inventario.forEach(p => p.cantidad += valor);
+        guardar();
+      }
+    }
+
+    function borrarTodo() {
+      if (confirm('¿Estás seguro de que quieres borrar todo el inventario? Esta acción no se puede deshacer.')) {
+        inventario = [];
         guardar();
       }
     }
