@@ -168,35 +168,34 @@
     document.getElementById("totalCantidad").textContent = total;
   }
 function agregarProducto() {
-  const codigo = document.getElementById("codigo").value.trim();
-  const nombre = document.getElementById("nombre").value.trim();
-  const cantidadInput = document.getElementById("cantidad").value.trim();
-
-  const cantidad = parseInt(cantidadInput);
+  let codigo = document.getElementById("codigo").value.trim().toLowerCase();
+  let nombre = document.getElementById("nombre").value.trim();
+  let cantidad = parseInt(document.getElementById("cantidad").value.trim());
 
   if (!codigo || !nombre || isNaN(cantidad)) {
     alert("Por favor completa todos los campos correctamente.");
     return;
   }
 
-  // Buscar si ya existe un producto con ese código
-  const indice = inventario.findIndex(p => p.codigo === codigo);
+  // Buscar si ya existe el código (normalizado)
+  const index = inventario.findIndex(p => p.codigo.toLowerCase() === codigo);
 
-  if (indice !== -1) {
+  if (index !== -1) {
     // Si existe, sumar la cantidad
-    inventario[indice].cantidad += cantidad;
+    inventario[index].cantidad += cantidad;
   } else {
-    // Si no existe, agregarlo nuevo
+    // Si no existe, agregar nuevo
     inventario.push({ codigo, nombre, cantidad });
   }
 
   renderizarTabla();
 
-  // Limpiar los campos
+  // Limpiar campos
   document.getElementById("codigo").value = "";
   document.getElementById("nombre").value = "";
   document.getElementById("cantidad").value = "";
 }
+
     function editar(i) {
       const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
       const nuevoNombre = prompt("Nuevo nombre:", inventario[i].nombre);
