@@ -2,123 +2,134 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventario Patines Bogotá</title>
   <style>
     body {
-      background-color: #0d1117;
-      color: #d1ffe0;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
       margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #0f0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      margin-top: 40px;
+      background-color: #111;
+      border: 2px solid #0f0;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px #0f0;
     }
 
     h1 {
       text-align: center;
-      color: #7fff7f;
+      color: #0f0;
     }
 
-    .contenedor {
-      max-width: 1000px;
-      margin: auto;
-      background: #161b22;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #1f8b4c;
-    }
-
-    input, button {
+    input[type="text"],
+    input[type="number"] {
       padding: 10px;
-      margin: 5px;
+      border: 1px solid #0f0;
+      background-color: #000;
+      color: #0f0;
       border-radius: 5px;
+      margin: 5px;
+      width: 180px;
+    }
+
+    input[type="file"] {
+      margin-left: 10px;
+    }
+
+    .btn {
+      padding: 10px 14px;
       border: none;
-      font-size: 1rem;
-    }
-
-    input[type="text"], input[type="number"] {
-      width: calc(33% - 12px);
-      background-color: #0f1218;
-      color: #d1ffe0;
-      border: 1px solid #2ea043;
-    }
-
-    button {
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
 
-    .agregar {
-      background: #2ea043;
-      color: white;
+    .btn-agregar {
+      background-color: #28a745;
+      color: #fff;
     }
 
-    .importar {
-      background: #1f6feb;
-      color: white;
+    .btn-importar {
+      background-color: #007bff;
+      color: #fff;
     }
 
-    .exportar {
-      background: #f0b400;
-      color: black;
+    .btn-exportar {
+      background-color: #ffc107;
+      color: #000;
+    }
+
+    .btn-limpiar,
+    .btn-borrar {
+      background-color: #dc3545;
+      color: #fff;
     }
 
     table {
       width: 100%;
-      border-collapse: collapse;
       margin-top: 20px;
+      border-collapse: collapse;
+      background-color: #1a1a1a;
     }
 
     th, td {
+      border: 1px solid #0f0;
       padding: 10px;
-      border-bottom: 1px solid #2ea043;
-      text-align: left;
+      text-align: center;
     }
 
     th {
-      background-color: #1e232a;
-      color: #7fff7f;
-    }
-
-    tr.traido {
-      background-color: #243b26;
+      background-color: #000;
+      color: #0f0;
     }
 
     .acciones button {
-      margin-right: 5px;
-    }
-
-    .traido-btn {
-      background-color: #2ea043;
-    }
-
-    .editar-btn {
-      background-color: #f0b400;
-    }
-
-    .eliminar-btn {
-      background-color: #ff5555;
-      color: white;
-    }
-
-    #total {
-      text-align: right;
+      background-color: #0f0;
+      color: #000;
+      margin: 0 4px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
       font-weight: bold;
+    }
+
+    .acciones button:hover {
+      background-color: #00cc00;
+    }
+
+    .totales {
+      text-align: right;
       margin-top: 10px;
+      font-weight: bold;
+      color: #0f0;
     }
   </style>
 </head>
 <body>
-  <h1>📦 Inventario Patines Bogotá</h1>
-  <div class="contenedor">
-    <input type="text" id="codigo" placeholder="Código" />
-    <input type="text" id="nombre" placeholder="Nombre del producto" />
-    <input type="number" id="cantidad" placeholder="Cantidad" />
-    <button class="agregar" onclick="agregarProducto()">➕ Agregar</button>
-    <input type="file" id="archivoExcel" accept=".xlsx" />
-    <button class="importar" onclick="importarExcel()">📥 Importar Excel</button>
-    <button class="exportar" onclick="exportarExcel()">📤 Exportar Excel</button>
-
-    <table>
+  <div class="container">
+    <h1>📦 Inventario Patines Bogotá</h1>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
+      <input type="text" id="codigo" placeholder="Código de barras" />
+      <input type="text" id="nombre" placeholder="Nombre del producto" />
+      <input type="number" id="cantidad" placeholder="Cantidad" />
+      <button class="btn btn-agregar" onclick="agregarProducto()">➕ Agregar</button>
+      <input type="file" id="excelFile" accept=".xlsx, .xls" />
+    </div>
+    <div style="margin-top:10px; display:flex; justify-content:center; gap:10px; flex-wrap: wrap;">
+      <button class="btn btn-importar" onclick="importarDesdeExcel()">📥 Importar Excel</button>
+      <button class="btn btn-exportar" onclick="exportarExcel()">📤 Exportar Excel</button>
+      <button class="btn btn-limpiar" onclick="limpiarCantidad()">🧹 Limpiar Cantidad</button>
+      <button class="btn btn-borrar" onclick="borrarTodo()">🗑️ Borrar Todo</button>
+    </div>
+ <input type="text" id="buscador" placeholder="Buscar por código o nombre..." style="width: 100%; padding: 10px; margin: 10px 0; font-size: 16px;">
+    <table id="tabla-inventario">
       <thead>
         <tr>
           <th>Código</th>
@@ -127,85 +138,92 @@
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="inventario-body"></tbody>
+      <tbody></tbody>
     </table>
-
-    <div id="total">Total: 0</div>
+    <div class="totales">Total: <span id="totalCantidad">0</span></div>
   </div>
 
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     let inventario = [];
 
-    function agregarProducto() {
-      const codigo = document.getElementById('codigo').value.trim();
-      const nombre = document.getElementById('nombre').value.trim();
-      const cantidad = parseInt(document.getElementById('cantidad').value);
-
-      if (!codigo || !nombre || isNaN(cantidad)) {
-        alert("Completa todos los campos.");
-        return;
-      }
-
-      inventario.push({ codigo, nombre, cantidad, traida: false });
-      limpiarCampos();
-      mostrar();
-    }
-
-    function limpiarCampos() {
-      document.getElementById('codigo').value = '';
-      document.getElementById('nombre').value = '';
-      document.getElementById('cantidad').value = '';
-    }
-
-    function mostrar() {
-      const tbody = document.getElementById('inventario-body');
-      tbody.innerHTML = '';
-
-      inventario.forEach((prod, i) => {
-        const tr = document.createElement('tr');
-        if (prod.traida) tr.classList.add('traido');
-
-        tr.innerHTML = `
-          <td>${prod.codigo}</td>
-          <td>${prod.nombre}</td>
-          <td>${prod.cantidad}</td>
-          <td class="acciones">
-            <button class="traido-btn" onclick="marcarTraido(${i})">✔</button>
-            <button class="editar-btn" onclick="editar(${i})">✏️</button>
-            <button class="eliminar-btn" onclick="eliminar(${i})">🗑️</button>
-          </td>
+    function renderizarTabla() {
+      const tbody = document.querySelector("#tabla tbody");
+      tbody.innerHTML = "";
+      let total = 0;
+      inventario.forEach((item, i) => {
+        total += item.cantidad;
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.codigo}</td>
+            <td>${item.nombre}</td>
+            <td>${item.cantidad}</td>
+            <td class="acciones">
+              <button onclick="editar(${i})">✏️</button>
+              <button onclick="eliminar(${i})">🗑️</button>
+            </td>
+          </tr>
         `;
-        tbody.appendChild(tr);
       });
-
-      actualizarTotal();
+      document.getElementById("totalCantidad").textContent = total;
     }
 
-    function marcarTraido(index) {
-      inventario[index].traida = !inventario[index].traida;
-      mostrar();
+    function agregarProducto() {
+      const codigo = document.getElementById("codigo").value.trim();
+      const nombre = document.getElementById("nombre").value.trim();
+      const cantidad = parseInt(document.getElementById("cantidad").value) || 0;
+      if (!codigo || !nombre) return alert("Completa todos los campos");
+      inventario.push({ codigo, nombre, cantidad });
+      renderizarTabla();
     }
 
-    function editar(index) {
-      const prod = inventario[index];
-      document.getElementById('codigo').value = prod.codigo;
-      document.getElementById('nombre').value = prod.nombre;
-      document.getElementById('cantidad').value = prod.cantidad;
-      inventario.splice(index, 1);
-      mostrar();
+    function editar(i) {
+      const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
+      const nuevoNombre = prompt("Nuevo nombre:", inventario[i].nombre);
+      const nuevaCantidad = prompt("Nueva cantidad:", inventario[i].cantidad);
+      if (nuevoCodigo !== null) inventario[i].codigo = nuevoCodigo;
+      if (nuevoNombre !== null) inventario[i].nombre = nuevoNombre;
+      if (nuevaCantidad !== null) inventario[i].cantidad = parseInt(nuevaCantidad) || 0;
+      renderizarTabla();
     }
 
-    function eliminar(index) {
-      if (confirm("¿Estás seguro de eliminar este producto?")) {
-        inventario.splice(index, 1);
-        mostrar();
+    function eliminar(i) {
+      if (confirm("¿Eliminar producto?")) {
+        inventario.splice(i, 1);
+        renderizarTabla();
       }
     }
 
-    function actualizarTotal() {
-      const total = inventario.reduce((sum, p) => sum + p.cantidad, 0);
-      document.getElementById('total').innerText = "Total: " + total;
+    function limpiarCantidad() {
+      inventario.forEach(p => p.cantidad = 0);
+      renderizarTabla();
+    }
+
+    function borrarTodo() {
+      if (confirm("¿Borrar todo el inventario?")) {
+        inventario = [];
+        renderizarTabla();
+      }
+    }
+
+    function importarDesdeExcel() {
+      const archivo = document.getElementById("excelFile").files[0];
+      if (!archivo) return alert("Selecciona un archivo Excel");
+
+      const lector = new FileReader();
+      lector.onload = e => {
+        const datos = new Uint8Array(e.target.result);
+        const libro = XLSX.read(datos, { type: "array" });
+        const hoja = libro.Sheets[libro.SheetNames[0]];
+        const productos = XLSX.utils.sheet_to_json(hoja);
+        inventario = productos.map(p => ({
+          codigo: p['Código'] || '',
+          nombre: p['Nombre'] || '',
+          cantidad: parseInt(p['Cantidad']) || 0
+        }));
+        renderizarTabla();
+      };
+      lector.readAsArrayBuffer(archivo);
     }
 
     function exportarExcel() {
@@ -214,23 +232,23 @@
       XLSX.utils.book_append_sheet(wb, ws, "Inventario");
       XLSX.writeFile(wb, "inventario_patines.xlsx");
     }
-
-    function importarExcel() {
-      const fileInput = document.getElementById('archivoExcel');
-      const file = fileInput.files[0];
-      if (!file) return alert("Selecciona un archivo Excel");
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(sheet);
-        inventario = datos.map(p => ({ ...p, traida: p.traida || false }));
-        mostrar();
-      };
-      reader.readAsArrayBuffer(file);
-    }
   </script>
+  <script>
+  document.getElementById('buscador').addEventListener('input', function () {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#inventario tbody tr');
+
+    filas.forEach(fila => {
+      const codigo = fila.cells[0].textContent.toLowerCase();
+      const nombre = fila.cells[1].textContent.toLowerCase();
+
+      if (codigo.includes(filtro) || nombre.includes(filtro)) {
+        fila.style.display = '';
+      } else {
+        fila.style.display = 'none';
+      }
+    });
+  });
+</script>
 </body>
 </html>
