@@ -321,5 +321,33 @@
 
     renderTabla();
   </script>
+  <script>
+  // ...otras funciones
+
+  function mostrar() {
+    const tbody = document.getElementById('inventario-body');
+    tbody.innerHTML = '';
+
+    inventario.forEach((producto, index) => {
+      const fila = document.createElement('tr');
+      if (producto.traida) fila.classList.add('traido');
+
+      fila.innerHTML = `
+        <td>${producto.codigo}</td>
+        <td>${producto.nombre}</td>
+        <td>${producto.cantidad}</td>
+        <td class="acciones">
+          <button class="traido" onclick="marcarComoTraido(${index})">✔</button>
+          <button class="editar" onclick="editarProducto(${index})">✏️</button>
+          <button class="eliminar" onclick="eliminarProducto(${index})">🗑️</button>
+        </td>
+      `;
+
+      tbody.appendChild(fila);
+    });
+
+    actualizarTotal();
+  }
+</script>
 </body>
 </html>
