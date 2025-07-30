@@ -264,32 +264,38 @@
       XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
     }
 
-    function importarExcel(input) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(hoja);
-     datos.forEach(producto => {
-  const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
-  const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
-  const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
+  function importarExcel(input) {
+  const file = input.files[0];
+  const reader = new FileReader();
 
-  if (codigo && !isNaN(cantidad)) {
-    const existente = inventario.find(p => p.codigo === codigo);
-    if (existente) {
-      existente.cantidad += cantidad;
-    } else {
-      inventario.push({ codigo, nombre, cantidad, traida: false });
-    }
-  }
-});
-        guardar();
-      };
-      reader.readAsArrayBuffer(file);
-    }
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const datos = XLSX.utils.sheet_to_json(hoja);
+
+    datos.forEach(producto => {
+      const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
+      const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
+      const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
+
+      if (codigo && !isNaN(cantidad)) {
+        const existente = inventario.find(p => p.codigo === codigo);
+        if (existente) {
+          existente.cantidad += cantidad;
+        } else {
+          inventario.push({ codigo, nombre, cantidad, traida: false });
+        }
+      }
+    });
+
+    guardar();
+    input.value = ''; // 🔁 Solución: reiniciar input
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
 
     function guardar() {
       localStorage.setItem('inventario', JSON.stringify(inventario));
