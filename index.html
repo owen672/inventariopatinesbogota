@@ -1,148 +1,122 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inventario Patines Bogotá</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --verde: #2ecc71;
-      --verde-oscuro: #27ae60;
-      --negro: #0a0a0a;
-      --blanco: #ffffff;
-      --gris: #1c1c1c;
-      --gris-claro: #2f2f2f;
-      --azul: #3498db;
-      --azul-oscuro: #2980b9;
-      --naranja: #f39c12;
-      --purpura: #9b59b6;
-    }
-    * { box-sizing: border-box; }
     body {
+      background-color: #0d1117;
+      color: #d1ffe0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to bottom, var(--negro), var(--gris));
-      color: var(--blanco);
     }
-    header {
-      background-color: var(--gris);
-      padding: 40px 20px;
+
+    h1 {
       text-align: center;
-      border-bottom: 4px solid var(--verde);
-      box-shadow: 0 0 20px var(--verde);
+      color: #7fff7f;
     }
-    header h1 {
-      font-size: 2.8rem;
-      margin: 0;
-      color: var(--verde);
-      text-shadow: 0 0 10px var(--verde);
-    }
-    .container {
-      max-width: 1200px;
+
+    .contenedor {
+      max-width: 1000px;
       margin: auto;
-      padding: 40px 20px;
-      background-color: rgba(20, 20, 20, 0.9);
-      border-radius: 20px;
-      box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
+      background: #161b22;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #1f8b4c;
     }
-    .form-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    input[type="text"], input[type="number"], input[type="file"] {
-      flex: 1;
-      min-width: 200px;
-      padding: 12px;
-      border-radius: 10px;
-      background-color: #121212;
-      border: 1px solid #444;
-      color: var(--blanco);
-      font-size: 1rem;
-    }
-    input[type="file"]::-webkit-file-upload-button {
-      background: var(--verde);
-      color: white;
-      border: none;
+
+    input, button {
       padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button {
-      padding: 12px 20px;
-      font-size: 1rem;
+      margin: 5px;
+      border-radius: 5px;
       border: none;
-      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: calc(33% - 12px);
+      background-color: #0f1218;
+      color: #d1ffe0;
+      border: 1px solid #2ea043;
+    }
+
+    button {
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: bold;
+      transition: background 0.3s ease;
     }
-    button:hover {
-      transform: scale(1.05);
-      filter: brightness(1.2);
+
+    .agregar {
+      background: #2ea043;
+      color: white;
     }
-    .btn-verde { background-color: var(--verde); color: var(--negro); }
-    .btn-azul { background-color: var(--azul); color: var(--blanco); }
-    .btn-purpura { background-color: var(--purpura); color: var(--blanco); }
-    .btn-naranja { background-color: var(--naranja); color: var(--negro); }
-    .btn-rojo { background-color: #e74c3c; color: var(--blanco); }
-    .btn-gris { background-color: #7f8c8d; color: var(--blanco); }
+
+    .importar {
+      background: #1f6feb;
+      color: white;
+    }
+
+    .exportar {
+      background: #f0b400;
+      color: black;
+    }
+
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
-      background-color: #121212;
-      border-radius: 12px;
-      overflow: hidden;
+      margin-top: 20px;
     }
+
     th, td {
-      padding: 14px;
-      text-align: center;
-      border: 1px solid #333;
+      padding: 10px;
+      border-bottom: 1px solid #2ea043;
+      text-align: left;
     }
+
     th {
-      background-color: var(--verde-oscuro);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      background-color: #1e232a;
+      color: #7fff7f;
     }
-    .marcado-traido {
-      background-color: rgba(39, 174, 96, 0.2);
+
+    tr.traido {
+      background-color: #243b26;
     }
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: var(--gris-claro);
+
+    .acciones button {
+      margin-right: 5px;
+    }
+
+    .traido-btn {
+      background-color: #2ea043;
+    }
+
+    .editar-btn {
+      background-color: #f0b400;
+    }
+
+    .eliminar-btn {
+      background-color: #ff5555;
+      color: white;
+    }
+
+    #total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Inventario Patines Bogotá</h1>
-  </header>
-
-  <div class="container">
-    <div class="form-group">
-      <input type="text" id="codigo" placeholder="Código de barras" autofocus>
-      <input type="text" id="nombre" placeholder="Nombre del producto">
-      <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
-      <button class="btn-verde" onclick="agregarProducto()">Agregar</button>
-    </div>
-
-    <div class="form-group">
-      <button class="btn-azul" onclick="exportarExcel()">Exportar a Excel</button>
-      <input type="file" id="importarArchivo" accept=".csv,.xlsx,.xls" onchange="importarExcel(this)">
-    </div>
-
-    <div class="form-group">
-      <button class="btn-gris" onclick="limpiarCantidades()">Limpiar Cantidades</button>
-      <button class="btn-purpura" onclick="aumentarCantidades()">Aumentar Cantidades</button>
-      <button class="btn-rojo" onclick="borrarTodo()">Borrar Todo</button>
-    </div>
+  <h1>📦 Inventario Patines Bogotá</h1>
+  <div class="contenedor">
+    <input type="text" id="codigo" placeholder="Código" />
+    <input type="text" id="nombre" placeholder="Nombre del producto" />
+    <input type="number" id="cantidad" placeholder="Cantidad" />
+    <button class="agregar" onclick="agregarProducto()">➕ Agregar</button>
+    <input type="file" id="archivoExcel" accept=".xlsx" />
+    <button class="importar" onclick="importarExcel()">📥 Importar Excel</button>
+    <button class="exportar" onclick="exportarExcel()">📤 Exportar Excel</button>
 
     <table>
       <thead>
@@ -153,174 +127,110 @@
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="tabla-inventario"></tbody>
+      <tbody id="inventario-body"></tbody>
     </table>
 
-    <h3>Total de productos: <span id="total-cantidad">0</span></h3>
+    <div id="total">Total: 0</div>
   </div>
 
-  <footer>
-    © 2025 Patines Bogotá. Todos los derechos reservados.
-  </footer>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
   <script>
-    let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
-
-    function renderTabla() {
-      const tabla = document.getElementById('tabla-inventario');
-      tabla.innerHTML = '';
-      inventario.forEach((item, index) => {
-        const row = document.createElement('tr');
-        if (item.traida) row.classList.add('marcado-traido');
-        row.innerHTML = `
-          <td>${item.codigo}</td>
-          <td>${item.nombre}</td>
-          <td>${item.cantidad}</td>
-          <td>
-            <button class="btn-verde" onclick="cambiarCantidad(${index}, 1)">+</button>
-            <button class="btn-rojo" onclick="cambiarCantidad(${index}, -1)">-</button>
-            <button class="btn-rojo" onclick="eliminar(${index})">Eliminar</button>
-            <button class="btn-naranja" onclick="renombrar(${index})">Renombrar</button>
-            <button class="btn-azul" onclick="marcarTraida(${index})">Traída</button>
-          </td>
-        `;
-        tabla.appendChild(row);
-      });
-
-      document.getElementById('total-cantidad').textContent = inventario.reduce((acc, item) => acc + item.cantidad, 0);
-    }
-
-    function cambiarCantidad(index, delta) {
-      inventario[index].cantidad += delta;
-      if (inventario[index].cantidad < 0) inventario[index].cantidad = 0;
-      guardar();
-    }
+    let inventario = [];
 
     function agregarProducto() {
       const codigo = document.getElementById('codigo').value.trim();
       const nombre = document.getElementById('nombre').value.trim();
       const cantidad = parseInt(document.getElementById('cantidad').value);
-      if (!codigo || isNaN(cantidad) || cantidad <= 0) return;
-      const existente = inventario.find(p => p.codigo === codigo);
-      if (existente) {
-        existente.cantidad += cantidad;
-      } else {
-        inventario.push({ codigo, nombre: nombre || 'Sin nombre', cantidad, traida: false });
+
+      if (!codigo || !nombre || isNaN(cantidad)) {
+        alert("Completa todos los campos.");
+        return;
       }
-      guardar();
+
+      inventario.push({ codigo, nombre, cantidad, traida: false });
+      limpiarCampos();
+      mostrar();
+    }
+
+    function limpiarCampos() {
+      document.getElementById('codigo').value = '';
+      document.getElementById('nombre').value = '';
+      document.getElementById('cantidad').value = '';
+    }
+
+    function mostrar() {
+      const tbody = document.getElementById('inventario-body');
+      tbody.innerHTML = '';
+
+      inventario.forEach((prod, i) => {
+        const tr = document.createElement('tr');
+        if (prod.traida) tr.classList.add('traido');
+
+        tr.innerHTML = `
+          <td>${prod.codigo}</td>
+          <td>${prod.nombre}</td>
+          <td>${prod.cantidad}</td>
+          <td class="acciones">
+            <button class="traido-btn" onclick="marcarTraido(${i})">✔</button>
+            <button class="editar-btn" onclick="editar(${i})">✏️</button>
+            <button class="eliminar-btn" onclick="eliminar(${i})">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      actualizarTotal();
+    }
+
+    function marcarTraido(index) {
+      inventario[index].traida = !inventario[index].traida;
+      mostrar();
+    }
+
+    function editar(index) {
+      const prod = inventario[index];
+      document.getElementById('codigo').value = prod.codigo;
+      document.getElementById('nombre').value = prod.nombre;
+      document.getElementById('cantidad').value = prod.cantidad;
+      inventario.splice(index, 1);
+      mostrar();
     }
 
     function eliminar(index) {
-      if (confirm('¿Eliminar este producto?')) {
+      if (confirm("¿Estás seguro de eliminar este producto?")) {
         inventario.splice(index, 1);
-        guardar();
+        mostrar();
       }
     }
 
-    function renombrar(index) {
-      const nuevo = prompt('Nuevo nombre del producto:', inventario[index].nombre);
-      if (nuevo) {
-        inventario[index].nombre = nuevo;
-        guardar();
-      }
-    }
-
-    function marcarTraida(index) {
-      inventario[index].traida = !inventario[index].traida;
-      guardar();
-    }
-
-    function limpiarCantidades() {
-      if (confirm('¿Reiniciar todas las cantidades a 0?')) {
-        inventario.forEach(p => p.cantidad = 0);
-        guardar();
-      }
-    }
-
-    function aumentarCantidades() {
-      const valor = parseInt(prompt('¿Cuánto quieres aumentar a cada producto?', '1'));
-      if (!isNaN(valor)) {
-        inventario.forEach(p => p.cantidad += valor);
-        guardar();
-      }
-    }
-
-    function borrarTodo() {
-      if (confirm('¿Estás seguro de que quieres borrar todo el inventario? Esta acción no se puede deshacer.')) {
-        inventario = [];
-        guardar();
-      }
+    function actualizarTotal() {
+      const total = inventario.reduce((sum, p) => sum + p.cantidad, 0);
+      document.getElementById('total').innerText = "Total: " + total;
     }
 
     function exportarExcel() {
-      const data = inventario.map(p => ({
-        Código: p.codigo,
-        Nombre: p.nombre,
-        Cantidad: p.cantidad
-      }));
-      const hoja = XLSX.utils.json_to_sheet(data);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Inventario");
-      const fecha = new Date().toISOString().slice(0,10);
-      XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
+      const ws = XLSX.utils.json_to_sheet(inventario);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+      XLSX.writeFile(wb, "inventario_patines.xlsx");
     }
 
-    function importarExcel(input) {
-      const file = input.files[0];
+    function importarExcel() {
+      const fileInput = document.getElementById('archivoExcel');
+      const file = fileInput.files[0];
+      if (!file) return alert("Selecciona un archivo Excel");
+
       const reader = new FileReader();
-
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(hoja);
-
-        datos.forEach(producto => {
-          const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
-          const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
-          const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
-
-          if (codigo && !isNaN(cantidad)) {
-            const existente = inventario.find(p => p.codigo === codigo);
-            if (existente) {
-              existente.cantidad += cantidad;
-            } else {
-              inventario.push({ codigo, nombre, cantidad, traida: false });
-            }
-          }
-        });
-
-        guardar();
-        input.value = '';
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const datos = XLSX.utils.sheet_to_json(sheet);
+        inventario = datos.map(p => ({ ...p, traida: p.traida || false }));
+        mostrar();
       };
-
       reader.readAsArrayBuffer(file);
     }
-
-    function guardar() {
-      localStorage.setItem('inventario', JSON.stringify(inventario));
-      renderTabla();
-      document.getElementById('codigo').value = '';
-      document.getElementById('nombre').value = '';
-      document.getElementById('cantidad').value = 1;
-      document.getElementById('codigo').focus();
-    }
-
-    document.getElementById('codigo').addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') {
-        const codigo = this.value.trim();
-        if (codigo) {
-          const existente = inventario.find(p => p.codigo === codigo);
-          if (existente) {
-            existente.cantidad += 1;
-            guardar();
-          }
-        }
-      }
-    });
-
-    renderTabla();
   </script>
 </body>
 </html>
