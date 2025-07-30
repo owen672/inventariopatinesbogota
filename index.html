@@ -128,7 +128,7 @@
       <button class="btn btn-limpiar" onclick="limpiarCantidad()">🧹 Limpiar Cantidad</button>
       <button class="btn btn-borrar" onclick="borrarTodo()">🗑️ Borrar Todo</button>
     </div>
- <input type="text" id="buscador" placeholder="Buscar por código o nombre..." style="width: 100%; padding: 10px; margin: 10px 0; font-size: 16px;">
+    <input type="text" id="buscador" placeholder="Buscar por código o nombre..." style="width: 100%; padding: 10px; margin: 10px 0; font-size: 16px;">
     <table id="tabla-inventario">
       <thead>
         <tr>
@@ -145,37 +145,47 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    let inventario = [];
+   let inventario = [];
 
-    function renderizarTabla() {
-      const tbody = document.querySelector("#tabla tbody");
-      tbody.innerHTML = "";
-      let total = 0;
-      inventario.forEach((item, i) => {
-        total += item.cantidad;
-        tbody.innerHTML += `
-          <tr>
-            <td>${item.codigo}</td>
-            <td>${item.nombre}</td>
-            <td>${item.cantidad}</td>
-            <td class="acciones">
-              <button onclick="editar(${i})">✏️</button>
-              <button onclick="eliminar(${i})">🗑️</button>
-            </td>
-          </tr>
-        `;
-      });
-      document.getElementById("totalCantidad").textContent = total;
+  function renderizarTabla() {
+    const tbody = document.querySelector("#tabla-inventario tbody");
+    tbody.innerHTML = "";
+    let total = 0;
+    inventario.forEach((item, i) => {
+      total += item.cantidad;
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.codigo}</td>
+        <td>${item.nombre}</td>
+        <td>${item.cantidad}</td>
+        <td class="acciones">
+          <button onclick="editar(${i})">✏️</button>
+          <button onclick="eliminar(${i})">🗑️</button>
+        </td>
+      `;
+      tbody.appendChild(fila);
+    });
+    document.getElementById("totalCantidad").textContent = total;
+  }
+
+  function agregarProducto() {
+    const codigo = document.getElementById("codigo").value.trim();
+    const nombre = document.getElementById("nombre").value.trim();
+    const cantidad = parseInt(document.getElementById("cantidad").value);
+
+    if (!codigo || !nombre || isNaN(cantidad)) {
+      alert("Por favor completa todos los campos correctamente.");
+      return;
     }
 
-    function agregarProducto() {
-      const codigo = document.getElementById("codigo").value.trim();
-      const nombre = document.getElementById("nombre").value.trim();
-      const cantidad = parseInt(document.getElementById("cantidad").value) || 0;
-      if (!codigo || !nombre) return alert("Completa todos los campos");
-      inventario.push({ codigo, nombre, cantidad });
-      renderizarTabla();
-    }
+    inventario.push({ codigo, nombre, cantidad });
+    renderizarTabla();
+
+    // Limpiar campos
+    document.getElementById("codigo").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("cantidad").value = "";
+  }
 
     function editar(i) {
       const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
@@ -232,23 +242,22 @@
       XLSX.utils.book_append_sheet(wb, ws, "Inventario");
       XLSX.writeFile(wb, "inventario_patines.xlsx");
     }
-  </script>
-  <script>
-  document.getElementById('buscador').addEventListener('input', function () {
-    const filtro = this.value.toLowerCase();
-    const filas = document.querySelectorAll('#inventario tbody tr');
 
-    filas.forEach(fila => {
-      const codigo = fila.cells[0].textContent.toLowerCase();
-      const nombre = fila.cells[1].textContent.toLowerCase();
+    document.getElementById('buscador').addEventListener('input', function () {
+      const filtro = this.value.toLowerCase();
+      const filas = document.querySelectorAll('#tabla-inventario tbody tr');
 
-      if (codigo.includes(filtro) || nombre.includes(filtro)) {
-        fila.style.display = '';
-      } else {
-        fila.style.display = 'none';
-      }
+      filas.forEach(fila => {
+        const codigo = fila.cells[0].textContent.toLowerCase();
+        const nombre = fila.cells[1].textContent.toLowerCase();
+
+        if (codigo.includes(filtro) || nombre.includes(filtro)) {
+          fila.style.display = '';
+        } else {
+          fila.style.display = 'none';
+        }
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
