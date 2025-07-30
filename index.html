@@ -44,17 +44,19 @@
       max-width: 1200px;
       margin: auto;
       padding: 40px 20px;
-      background-color: rgba(20, 20, 20, 0.8);
+      background-color: rgba(20, 20, 20, 0.9);
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
     }
     .form-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 15px;
       margin-bottom: 30px;
     }
     input[type="text"], input[type="number"], input[type="file"] {
+      flex: 1;
+      min-width: 200px;
       padding: 12px;
       border-radius: 10px;
       background-color: #121212;
@@ -71,7 +73,7 @@
       cursor: pointer;
     }
     button {
-      padding: 12px;
+      padding: 12px 20px;
       font-size: 1rem;
       border: none;
       border-radius: 10px;
@@ -163,10 +165,10 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    const tabla = document.getElementById('tabla-inventario');
     let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
 
     function renderTabla() {
+      const tabla = document.getElementById('tabla-inventario');
       tabla.innerHTML = '';
       inventario.forEach((item, index) => {
         const row = document.createElement('tr');
@@ -264,38 +266,37 @@
       XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
     }
 
-  function importarExcel(input) {
-  const file = input.files[0];
-  const reader = new FileReader();
+    function importarExcel(input) {
+      const file = input.files[0];
+      const reader = new FileReader();
 
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const hoja = workbook.Sheets[workbook.SheetNames[0]];
-    const datos = XLSX.utils.sheet_to_json(hoja);
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const hoja = workbook.Sheets[workbook.SheetNames[0]];
+        const datos = XLSX.utils.sheet_to_json(hoja);
 
-    datos.forEach(producto => {
-      const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
-      const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
-      const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
+        datos.forEach(producto => {
+          const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
+          const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
+          const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
 
-      if (codigo && !isNaN(cantidad)) {
-        const existente = inventario.find(p => p.codigo === codigo);
-        if (existente) {
-          existente.cantidad += cantidad;
-        } else {
-          inventario.push({ codigo, nombre, cantidad, traida: false });
-        }
-      }
-    });
+          if (codigo && !isNaN(cantidad)) {
+            const existente = inventario.find(p => p.codigo === codigo);
+            if (existente) {
+              existente.cantidad += cantidad;
+            } else {
+              inventario.push({ codigo, nombre, cantidad, traida: false });
+            }
+          }
+        });
 
-    guardar();
-    input.value = ''; // 🔁 Solución: reiniciar input
-  };
+        guardar();
+        input.value = '';
+      };
 
-  reader.readAsArrayBuffer(file);
-}
-
+      reader.readAsArrayBuffer(file);
+    }
 
     function guardar() {
       localStorage.setItem('inventario', JSON.stringify(inventario));
@@ -321,33 +322,5 @@
 
     renderTabla();
   </script>
-  <script>
-  // ...otras funciones
-
-  function mostrar() {
-    const tbody = document.getElementById('inventario-body');
-    tbody.innerHTML = '';
-
-    inventario.forEach((producto, index) => {
-      const fila = document.createElement('tr');
-      if (producto.traida) fila.classList.add('traido');
-
-      fila.innerHTML = `
-        <td>${producto.codigo}</td>
-        <td>${producto.nombre}</td>
-        <td>${producto.cantidad}</td>
-        <td class="acciones">
-          <button class="traido" onclick="marcarComoTraido(${index})">✔</button>
-          <button class="editar" onclick="editarProducto(${index})">✏️</button>
-          <button class="eliminar" onclick="eliminarProducto(${index})">🗑️</button>
-        </td>
-      `;
-
-      tbody.appendChild(fila);
-    });
-
-    actualizarTotal();
-  }
-</script>
 </body>
 </html>
