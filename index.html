@@ -145,6 +145,8 @@
       <input type="text" id="nombre" placeholder="Nombre del producto">
       <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
       <button class="btn-verde" onclick="agregarProducto()">Agregar</button>
+      <h3>Total de productos: <span id="total-cantidad">0</span></h3>
+
     </div>
 
     <div class="form-group">
@@ -195,6 +197,7 @@
             <button class="btn-naranja" onclick="renombrar(${index})">Renombrar</button>
             <button class="btn-azul" onclick="marcarTraida(${index})">Traída</button>
           </td>
+document.getElementById('total-cantidad').textContent = inventario.reduce((acc, item) => acc + item.cantidad, 0);
         `;
         tabla.appendChild(row);
       });
@@ -261,39 +264,52 @@
         guardar();
       }
     }
+function exportarExcel() {
+  const data = inventario.map(p => ({
+    Código: p.codigo,
+    Nombre: p.nombre,
+    Cantidad: p.cantidad
+  }));
 
-    function exportarExcel() {
-      const encabezado = 'Código,Nombre,Cantidad\n';
-      const filas = inventario.map(p => `${p.codigo},${p.nombre},${p.cantidad}`).join('\n');
-      const csv = encabezado + filas;
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const link = document.createElement('a');
-      const fecha = new Date().toISOString().slice(0,10);
-      link.download = `inventario_${fecha}.csv`;
-      link.href = URL.createObjectURL(blob);
-      link.click();
-    }
+  const hoja = XLSX.utils.json_to_sheet(data);
+  const libro = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(libro, hoja, "Inventario");
 
-    function importarCSV(input) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const lineas = e.target.result.split('\n').slice(1);
-        lineas.forEach(linea => {
-          const [codigo, nombre, cantidad] = linea.split(',');
-          if (codigo && cantidad) {
-            const existente = inventario.find(p => p.codigo === codigo);
-            if (existente) {
-              existente.cantidad += parseInt(cantidad);
-            } else {
-              inventario.push({ codigo, nombre, cantidad: parseInt(cantidad), traida: false });
-            }
-          }
-        });
-        guardar();
-      };
-      reader.readAsText(file);
-    }
+  const fecha = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
+}
+
+   function importarExcel(input) {
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const datos = XLSX.utils.sheet_to_json(hoja);
+
+    datos.forEach(({ Código, Nombre, Cantidad }) => {
+      if (Código && Cantidad) {
+        const existente = inventario.find(p => p.codigo === Código);
+        if (existente) {
+          existente.cantidad += parseInt(Cantidad);
+        } else {
+          inventario.push({
+            codigo: Código,
+            nombre: Nombre || 'Sin nombre',
+            cantidad: parseInt(Cantidad),
+            traida: false
+          });
+        }
+      }
+    });
+
+    guardar();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
 
     function guardar() {
       localStorage.setItem('inventario', JSON.stringify(inventario));
@@ -319,6 +335,7 @@
 
     renderTabla();
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
 
