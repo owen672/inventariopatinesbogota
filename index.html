@@ -20,16 +20,13 @@
       --naranja: #f39c12;
       --purpura: #9b59b6;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: 'Orbitron', sans-serif;
       background: linear-gradient(to bottom, var(--negro), var(--gris));
       color: var(--blanco);
     }
-
     header {
       background-color: var(--gris);
       padding: 40px 20px;
@@ -37,14 +34,12 @@
       border-bottom: 4px solid var(--verde);
       box-shadow: 0 0 20px var(--verde);
     }
-
     header h1 {
       font-size: 2.8rem;
       margin: 0;
       color: var(--verde);
       text-shadow: 0 0 10px var(--verde);
     }
-
     .container {
       max-width: 1200px;
       margin: auto;
@@ -53,14 +48,12 @@
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
     }
-
     .form-group {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
       margin-bottom: 30px;
     }
-
     input[type="text"], input[type="number"], input[type="file"] {
       padding: 12px;
       border-radius: 10px;
@@ -69,7 +62,6 @@
       color: var(--blanco);
       font-size: 1rem;
     }
-
     input[type="file"]::-webkit-file-upload-button {
       background: var(--verde);
       color: white;
@@ -78,7 +70,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
     button {
       padding: 12px;
       font-size: 1rem;
@@ -88,19 +79,16 @@
       transition: all 0.3s ease;
       font-weight: bold;
     }
-
     button:hover {
       transform: scale(1.05);
       filter: brightness(1.2);
     }
-
     .btn-verde { background-color: var(--verde); color: var(--negro); }
     .btn-azul { background-color: var(--azul); color: var(--blanco); }
     .btn-purpura { background-color: var(--purpura); color: var(--blanco); }
     .btn-naranja { background-color: var(--naranja); color: var(--negro); }
     .btn-rojo { background-color: #e74c3c; color: var(--blanco); }
     .btn-gris { background-color: #7f8c8d; color: var(--blanco); }
-
     table {
       width: 100%;
       margin-top: 20px;
@@ -109,23 +97,19 @@
       border-radius: 12px;
       overflow: hidden;
     }
-
     th, td {
       padding: 14px;
       text-align: center;
       border: 1px solid #333;
     }
-
     th {
       background-color: var(--verde-oscuro);
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
     .marcado-traido {
       background-color: rgba(39, 174, 96, 0.2);
     }
-
     footer {
       text-align: center;
       padding: 20px;
@@ -145,19 +129,17 @@
       <input type="text" id="nombre" placeholder="Nombre del producto">
       <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
       <button class="btn-verde" onclick="agregarProducto()">Agregar</button>
-      <h3>Total de productos: <span id="total-cantidad">0</span></h3>
-
     </div>
 
     <div class="form-group">
       <button class="btn-azul" onclick="exportarExcel()">Exportar a Excel</button>
-      <input type="file" id="importarArchivo" accept=".csv" onchange="importarCSV(this)">
+      <input type="file" id="importarArchivo" accept=".csv,.xlsx,.xls" onchange="importarExcel(this)">
     </div>
 
     <div class="form-group">
       <button class="btn-gris" onclick="limpiarCantidades()">Limpiar Cantidades</button>
       <button class="btn-purpura" onclick="aumentarCantidades()">Aumentar Cantidades</button>
-      <button class="btn-rojo" onclick="borrarTodo()">Borrar Todo</button> <!-- NUEVO BOTÓN -->
+      <button class="btn-rojo" onclick="borrarTodo()">Borrar Todo</button>
     </div>
 
     <table>
@@ -171,12 +153,15 @@
       </thead>
       <tbody id="tabla-inventario"></tbody>
     </table>
+
+    <h3>Total de productos: <span id="total-cantidad">0</span></h3>
   </div>
 
   <footer>
     © 2025 Patines Bogotá. Todos los derechos reservados.
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     const tabla = document.getElementById('tabla-inventario');
     let inventario = JSON.parse(localStorage.getItem('inventario')) || [];
@@ -197,10 +182,11 @@
             <button class="btn-naranja" onclick="renombrar(${index})">Renombrar</button>
             <button class="btn-azul" onclick="marcarTraida(${index})">Traída</button>
           </td>
-document.getElementById('total-cantidad').textContent = inventario.reduce((acc, item) => acc + item.cantidad, 0);
         `;
         tabla.appendChild(row);
       });
+
+      document.getElementById('total-cantidad').textContent = inventario.reduce((acc, item) => acc + item.cantidad, 0);
     }
 
     function cambiarCantidad(index, delta) {
@@ -264,52 +250,42 @@ document.getElementById('total-cantidad').textContent = inventario.reduce((acc, 
         guardar();
       }
     }
-function exportarExcel() {
-  const data = inventario.map(p => ({
-    Código: p.codigo,
-    Nombre: p.nombre,
-    Cantidad: p.cantidad
-  }));
 
-  const hoja = XLSX.utils.json_to_sheet(data);
-  const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hoja, "Inventario");
+    function exportarExcel() {
+      const data = inventario.map(p => ({
+        Código: p.codigo,
+        Nombre: p.nombre,
+        Cantidad: p.cantidad
+      }));
+      const hoja = XLSX.utils.json_to_sheet(data);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Inventario");
+      const fecha = new Date().toISOString().slice(0,10);
+      XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
+    }
 
-  const fecha = new Date().toISOString().slice(0,10);
-  XLSX.writeFile(libro, `inventario_${fecha}.xlsx`);
-}
-
-   function importarExcel(input) {
-  const file = input.files[0];
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const hoja = workbook.Sheets[workbook.SheetNames[0]];
-    const datos = XLSX.utils.sheet_to_json(hoja);
-
-    datos.forEach(({ Código, Nombre, Cantidad }) => {
-      if (Código && Cantidad) {
-        const existente = inventario.find(p => p.codigo === Código);
-        if (existente) {
-          existente.cantidad += parseInt(Cantidad);
-        } else {
-          inventario.push({
-            codigo: Código,
-            nombre: Nombre || 'Sin nombre',
-            cantidad: parseInt(Cantidad),
-            traida: false
-          });
-        }
-      }
-    });
-
-    guardar();
-  };
-
-  reader.readAsArrayBuffer(file);
-}
+    function importarExcel(input) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const hoja = workbook.Sheets[workbook.SheetNames[0]];
+        const datos = XLSX.utils.sheet_to_json(hoja);
+        datos.forEach(({ Código, Nombre, Cantidad }) => {
+          if (Código && Cantidad) {
+            const existente = inventario.find(p => p.codigo === Código);
+            if (existente) {
+              existente.cantidad += parseInt(Cantidad);
+            } else {
+              inventario.push({ codigo: Código, nombre: Nombre || 'Sin nombre', cantidad: parseInt(Cantidad), traida: false });
+            }
+          }
+        });
+        guardar();
+      };
+      reader.readAsArrayBuffer(file);
+    }
 
     function guardar() {
       localStorage.setItem('inventario', JSON.stringify(inventario));
@@ -335,7 +311,5 @@ function exportarExcel() {
 
     renderTabla();
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
-
