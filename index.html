@@ -272,16 +272,20 @@
         const workbook = XLSX.read(data, { type: 'array' });
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const datos = XLSX.utils.sheet_to_json(hoja);
-        datos.forEach(({ Código, Nombre, Cantidad }) => {
-          if (Código && Cantidad) {
-            const existente = inventario.find(p => p.codigo === Código);
-            if (existente) {
-              existente.cantidad += parseInt(Cantidad);
-            } else {
-              inventario.push({ codigo: Código, nombre: Nombre || 'Sin nombre', cantidad: parseInt(Cantidad), traida: false });
-            }
-          }
-        });
+     datos.forEach(producto => {
+  const codigo = producto.Código || producto.codigo || producto['Codigo'] || producto['codigo'];
+  const nombre = producto.Nombre || producto.nombre || 'Sin nombre';
+  const cantidad = parseInt(producto.Cantidad || producto.cantidad || 0);
+
+  if (codigo && !isNaN(cantidad)) {
+    const existente = inventario.find(p => p.codigo === codigo);
+    if (existente) {
+      existente.cantidad += cantidad;
+    } else {
+      inventario.push({ codigo, nombre, cantidad, traida: false });
+    }
+  }
+});
         guardar();
       };
       reader.readAsArrayBuffer(file);
