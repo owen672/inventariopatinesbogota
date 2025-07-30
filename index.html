@@ -170,7 +170,9 @@
 function agregarProducto() {
   const codigo = document.getElementById("codigo").value.trim();
   const nombre = document.getElementById("nombre").value.trim();
-  const cantidad = parseInt(document.getElementById("cantidad").value);
+  const cantidadInput = document.getElementById("cantidad").value.trim();
+
+  const cantidad = parseInt(cantidadInput);
 
   if (!codigo || !nombre || isNaN(cantidad)) {
     alert("Por favor completa todos los campos correctamente.");
@@ -178,25 +180,23 @@ function agregarProducto() {
   }
 
   // Buscar si ya existe un producto con ese código
-  const existente = inventario.find(p => p.codigo === codigo);
+  const indice = inventario.findIndex(p => p.codigo === codigo);
 
-  if (existente) {
-    // Si ya existe, sumar cantidad
-    existente.cantidad += cantidad;
+  if (indice !== -1) {
+    // Si existe, sumar la cantidad
+    inventario[indice].cantidad += cantidad;
   } else {
-    // Si no existe, agregarlo
+    // Si no existe, agregarlo nuevo
     inventario.push({ codigo, nombre, cantidad });
   }
 
   renderizarTabla();
 
-  // Limpiar campos
+  // Limpiar los campos
   document.getElementById("codigo").value = "";
   document.getElementById("nombre").value = "";
   document.getElementById("cantidad").value = "";
 }
-
-
     function editar(i) {
       const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
       const nuevoNombre = prompt("Nuevo nombre:", inventario[i].nombre);
