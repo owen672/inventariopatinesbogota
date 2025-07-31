@@ -6,317 +6,181 @@
   <title>Inventario Patines Bogotá</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0d0d0d;
-      color: #0f0;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      margin-top: 40px;
       background-color: #111;
-      border: 2px solid #0f0;
-      border-radius: 15px;
+      color: #0f0;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       padding: 20px;
-      box-shadow: 0 0 20px #0f0;
     }
-
     h1 {
       text-align: center;
       color: #0f0;
     }
-
-    input[type="text"],
-    input[type="number"] {
+    .input-section {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    input, button {
       padding: 10px;
-      border: 1px solid #0f0;
-      background-color: #000;
-      color: #0f0;
-      border-radius: 5px;
-      margin: 5px;
-      width: 180px;
-    }
-
-    input[type="file"] {
-      margin-left: 10px;
-    }
-
-    .btn {
-      padding: 10px 14px;
       border: none;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    input {
+      background: #222;
+      color: #0f0;
+    }
+    button {
+      background: #0f0;
+      color: #000;
       cursor: pointer;
+      transition: transform 0.2s;
     }
-
-    .btn-agregar {
-      background-color: #28a745;
-      color: #fff;
+    button:hover {
+      transform: scale(1.05);
     }
-
-    .btn-importar {
-      background-color: #007bff;
-      color: #fff;
-    }
-
-    .btn-exportar {
-      background-color: #ffc107;
-      color: #000;
-    }
-
-    .btn-limpiar,
-    .btn-borrar {
-      background-color: #dc3545;
-      color: #fff;
-    }
-
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      background-color: #1a1a1a;
-    }
-
-    th, td {
-      border: 1px solid #0f0;
+    .product-card {
+      background: #000;
+      border: 2px solid #0f0;
+      border-radius: 10px;
       padding: 10px;
+      margin: 10px;
+      width: 260px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .product-card h3 {
+      margin: 0 0 10px;
+      color: #fff;
+    }
+    .product-actions button {
+      margin: 5px 5px 0 0;
+    }
+    .summary {
       text-align: center;
-    }
-
-    th {
-      background-color: #000;
-      color: #0f0;
-    }
-
-    .acciones button {
-      background-color: #0f0;
-      color: #000;
-      margin: 0 4px;
-      padding: 6px 10px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .acciones button:hover {
-      background-color: #00cc00;
-    }
-
-    .totales {
-      text-align: right;
-      margin-top: 10px;
-      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 20px;
       color: #0f0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📦 Inventario Patines Bogotá</h1>
-    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
-      <input type="text" id="codigo" placeholder="Código de barras" />
-      <input type="text" id="nombre" placeholder="Nombre del producto" />
-      <input type="number" id="cantidad" placeholder="Cantidad" />
-      <button class="btn btn-agregar" onclick="agregarProducto()">➕ Agregar</button>
-      <input type="file" id="excelFile" accept=".xlsx, .xls" />
-    </div>
-    <div style="margin-top:10px; display:flex; justify-content:center; gap:10px; flex-wrap: wrap;">
-      <button class="btn btn-importar" onclick="importarDesdeExcel()">📥 Importar Excel</button>
-      <button class="btn btn-exportar" onclick="exportarExcel()">📤 Exportar Excel</button>
-      <button class="btn btn-limpiar" onclick="limpiarCantidad()">🧹 Limpiar Cantidad</button>
-      <button class="btn btn-borrar" onclick="borrarTodo()">🗑️ Borrar Todo</button>
-    </div>
-    <input type="text" id="buscador" placeholder="Buscar por código o nombre..." style="width: 100%; padding: 10px; margin: 10px 0; font-size: 16px;">
-    <table id="tabla-inventario">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>Cantidad</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="totales">Total: <span id="totalCantidad">0</span></div>
+  <h1>Inventario Patines Bogotá</h1>
+
+  <div class="input-section">
+    <input type="text" id="codigo" placeholder="Código de barras" autofocus />
+    <input type="text" id="nombre" placeholder="Nombre del producto" />
+    <button onclick="limpiarCantidades()">🧹 Limpiar cantidades</button>
+    <button onclick="borrarTodo()">🗑️ Borrar todo</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <div id="productos"></div>
+
+  <div class="summary">
+    Total productos: <span id="total">0</span>
+  </div>
+
   <script>
-   let inventario = [];
+    const productos = {};
 
-  function renderizarTabla() {
-    const tbody = document.querySelector("#tabla-inventario tbody");
-    tbody.innerHTML = "";
-    let total = 0;
-    inventario.forEach((item, i) => {
-      total += item.cantidad;
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${item.codigo}</td>
-        <td>${item.nombre}</td>
-        <td>${item.cantidad}</td>
-        <td class="acciones">
-          <button onclick="editar(${i})">✏️</button>
-          <button onclick="eliminar(${i})">🗑️</button>
-        </td>
-      `;
-      tbody.appendChild(fila);
+    const codigoInput = document.getElementById("codigo");
+    const nombreInput = document.getElementById("nombre");
+    const productosDiv = document.getElementById("productos");
+    const totalSpan = document.getElementById("total");
+
+    codigoInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        agregarProducto();
+      }
     });
-    document.getElementById("totalCantidad").textContent = total;
-  }
-function agregarProducto() {
-  let codigo = document.getElementById("codigo").value.trim().toLowerCase();
-  let nombre = document.getElementById("nombre").value.trim();
-  let cantidad = parseInt(document.getElementById("cantidad").value.trim());
 
-  if (!codigo || !nombre || isNaN(cantidad)) {
-    alert("Por favor completa todos los campos correctamente.");
-    return;
-  }
+    function agregarProducto() {
+      const codigo = codigoInput.value.trim();
+      const nombre = nombreInput.value.trim() || "Sin nombre";
 
-  // Buscar si ya existe el código (normalizado)
-  const index = inventario.findIndex(p => p.codigo.toLowerCase() === codigo);
+      if (!codigo) return;
 
-  if (index !== -1) {
-    // Si existe, sumar la cantidad
-    inventario[index].cantidad += cantidad;
-  } else {
-    // Si no existe, agregar nuevo
-    inventario.push({ codigo, nombre, cantidad });
-  }
+      if (productos[codigo]) {
+        productos[codigo].cantidad++;
+      } else {
+        productos[codigo] = { nombre: nombre, cantidad: 1 };
+      }
 
-  renderizarTabla();
-
-  // Limpiar campos
-  document.getElementById("codigo").value = "";
-  document.getElementById("nombre").value = "";
-  document.getElementById("cantidad").value = "";
-}
-
-    function editar(i) {
-      const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
-      const nuevoNombre = prompt("Nuevo nombre:", inventario[i].nombre);
-      const nuevaCantidad = prompt("Nueva cantidad:", inventario[i].cantidad);
-      if (nuevoCodigo !== null) inventario[i].codigo = nuevoCodigo;
-      if (nuevoNombre !== null) inventario[i].nombre = nuevoNombre;
-      if (nuevaCantidad !== null) inventario[i].cantidad = parseInt(nuevaCantidad) || 0;
-      renderizarTabla();
+      codigoInput.value = "";
+      nombreInput.value = "";
+      renderProductos();
     }
 
-    function eliminar(i) {
-      if (confirm("¿Eliminar producto?")) {
-        inventario.splice(i, 1);
-        renderizarTabla();
+    function renderProductos() {
+      productosDiv.innerHTML = "";
+      let total = 0;
+
+      for (const [codigo, data] of Object.entries(productos)) {
+        total += data.cantidad;
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <h3>${data.nombre}</h3>
+          <p><strong>Código:</strong> ${codigo}</p>
+          <p><strong>Cantidad:</strong> ${data.cantidad}</p>
+          <div class="product-actions">
+            <button onclick="sumarCantidad('${codigo}')">➕</button>
+            <button onclick="restarCantidad('${codigo}')">➖</button>
+            <button onclick="renombrarProducto('${codigo}')">✏️</button>
+            <button onclick="eliminarProducto('${codigo}')">❌</button>
+          </div>
+        `;
+        productosDiv.appendChild(card);
+      }
+
+      totalSpan.textContent = total;
+    }
+
+    function sumarCantidad(codigo) {
+      productos[codigo].cantidad++;
+      renderProductos();
+    }
+
+    function restarCantidad(codigo) {
+      if (productos[codigo].cantidad > 0) {
+        productos[codigo].cantidad--;
+      }
+      renderProductos();
+    }
+
+    function renombrarProducto(codigo) {
+      const nuevoNombre = prompt("Nuevo nombre del producto:", productos[codigo].nombre);
+      if (nuevoNombre !== null) {
+        productos[codigo].nombre = nuevoNombre.trim();
+        renderProductos();
       }
     }
 
-    function limpiarCantidad() {
-      inventario.forEach(p => p.cantidad = 0);
-      renderizarTabla();
+    function eliminarProducto(codigo) {
+      if (confirm("¿Eliminar este producto?")) {
+        delete productos[codigo];
+        renderProductos();
+      }
+    }
+
+    function limpiarCantidades() {
+      for (const codigo in productos) {
+        productos[codigo].cantidad = 0;
+      }
+      renderProductos();
     }
 
     function borrarTodo() {
       if (confirm("¿Borrar todo el inventario?")) {
-        inventario = [];
-        renderizarTabla();
+        for (const codigo in productos) {
+          delete productos[codigo];
+        }
+        renderProductos();
       }
     }
-
-    function importarDesdeExcel() {
-      const archivo = document.getElementById("excelFile").files[0];
-      if (!archivo) return alert("Selecciona un archivo Excel");
-
-      const lector = new FileReader();
-      lector.onload = e => {
-        const datos = new Uint8Array(e.target.result);
-        const libro = XLSX.read(datos, { type: "array" });
-        const hoja = libro.Sheets[libro.SheetNames[0]];
-        const productos = XLSX.utils.sheet_to_json(hoja);
-        inventario = productos.map(p => ({
-          codigo: p['Código'] || '',
-          nombre: p['Nombre'] || '',
-          cantidad: parseInt(p['Cantidad']) || 0
-        }));
-        renderizarTabla();
-      };
-      lector.readAsArrayBuffer(archivo);
-    }
-
-    function exportarExcel() {
-      const ws = XLSX.utils.json_to_sheet(inventario);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-      XLSX.writeFile(wb, "inventario_patines.xlsx");
-    }
-
-    document.getElementById('buscador').addEventListener('input', function () {
-      const filtro = this.value.toLowerCase();
-      const filas = document.querySelectorAll('#tabla-inventario tbody tr');
-
-      filas.forEach(fila => {
-        const codigo = fila.cells[0].textContent.toLowerCase();
-        const nombre = fila.cells[1].textContent.toLowerCase();
-
-        if (codigo.includes(filtro) || nombre.includes(filtro)) {
-          fila.style.display = '';
-        } else {
-          fila.style.display = 'none';
-        }
-      });
-    });
   </script>
- <script>
-  document.getElementById('product-code').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Evita que se recargue el formulario
-
-      const code = document.getElementById('product-code').value.trim();
-      const name = document.getElementById('product-name').value.trim();
-      const quantity = parseInt(document.getElementById('product-quantity').value);
-
-      if (!code || !name || isNaN(quantity) || quantity <= 0) {
-        alert('Por favor, llena todos los campos correctamente.');
-        return;
-      }
-
-      const table = document.getElementById('inventory-table').getElementsByTagName('tbody')[0];
-      const rows = table.getElementsByTagName('tr');
-      let found = false;
-
-      for (let i = 0; i < rows.length; i++) {
-        const cellCode = rows[i].getElementsByTagName('td')[0].textContent;
-        if (cellCode === code) {
-          const qtyCell = rows[i].getElementsByTagName('td')[2];
-          const currentQty = parseInt(qtyCell.textContent);
-          qtyCell.textContent = currentQty + quantity;
-          found = true;
-          break;
-        }
-      }
-
-      if (!found) {
-        const newRow = table.insertRow();
-        newRow.innerHTML = `
-          <td>${code}</td>
-          <td>${name}</td>
-          <td>${quantity}</td>
-          <td><button class="edit-btn">Editar</button></td>
-          <td><button class="delete-btn">Eliminar</button></td>
-        `;
-      }
-
-      // Limpiar inputs
-      document.getElementById('product-code').value = '';
-      document.getElementById('product-name').value = '';
-      document.getElementById('product-quantity').value = '1';
-
-      // Enfocar nuevamente para escanear el siguiente
-      document.getElementById('product-code').focus();
-    }
-  });
-</script>
 </body>
 </html>
