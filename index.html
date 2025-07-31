@@ -145,57 +145,56 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    let inventario = [];
+   let inventario = [];
 
-    function renderizarTabla() {
-      const tbody = document.querySelector("#tabla-inventario tbody");
-      tbody.innerHTML = "";
-      let total = 0;
-      inventario.forEach((item, i) => {
-        total += item.cantidad;
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${item.codigo}</td>
-          <td>${item.nombre}</td>
-          <td>${item.cantidad}</td>
-          <td class="acciones">
-            <button onclick="editar(${i})">✏️</button>
-            <button onclick="eliminar(${i})">🗑️</button>
-          </td>
-        `;
-        tbody.appendChild(fila);
-      });
-      document.getElementById("totalCantidad").textContent = total;
-    }
+  function renderizarTabla() {
+    const tbody = document.querySelector("#tabla-inventario tbody");
+    tbody.innerHTML = "";
+    let total = 0;
+    inventario.forEach((item, i) => {
+      total += item.cantidad;
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.codigo}</td>
+        <td>${item.nombre}</td>
+        <td>${item.cantidad}</td>
+        <td class="acciones">
+          <button onclick="editar(${i})">✏️</button>
+          <button onclick="eliminar(${i})">🗑️</button>
+        </td>
+      `;
+      tbody.appendChild(fila);
+    });
+    document.getElementById("totalCantidad").textContent = total;
+  }
+function agregarProducto() {
+  let codigo = document.getElementById("codigo").value.trim().toLowerCase();
+  let nombre = document.getElementById("nombre").value.trim();
+  let cantidad = parseInt(document.getElementById("cantidad").value.trim());
 
-    function agregarProducto() {
-      let codigo = document.getElementById("codigo").value.trim().toLowerCase();
-      let nombre = document.getElementById("nombre").value.trim();
-      let cantidad = parseInt(document.getElementById("cantidad").value.trim());
+  if (!codigo || !nombre || isNaN(cantidad)) {
+    alert("Por favor completa todos los campos correctamente.");
+    return;
+  }
 
-      if (!codigo || !nombre || isNaN(cantidad) || cantidad <= 0) {
-        alert("Por favor completa todos los campos correctamente.");
-        return;
-      }
+  // Buscar si ya existe el código (normalizado)
+  const index = inventario.findIndex(p => p.codigo.toLowerCase() === codigo);
 
-      // Buscar si ya existe el código (normalizado)
-      const index = inventario.findIndex(p => p.codigo.toLowerCase() === codigo);
+  if (index !== -1) {
+    // Si existe, sumar la cantidad
+    inventario[index].cantidad += cantidad;
+  } else {
+    // Si no existe, agregar nuevo
+    inventario.push({ codigo, nombre, cantidad });
+  }
 
-      if (index !== -1) {
-        // Si existe, sumar la cantidad
-        inventario[index].cantidad += cantidad;
-      } else {
-        // Si no existe, agregar nuevo
-        inventario.push({ codigo, nombre, cantidad });
-      }
+  renderizarTabla();
 
-      renderizarTabla();
-
-      // Limpiar campos
-      document.getElementById("codigo").value = "";
-      document.getElementById("nombre").value = "";
-      document.getElementById("cantidad").value = "";
-    }
+  // Limpiar campos
+  document.getElementById("codigo").value = "";
+  document.getElementById("nombre").value = "";
+  document.getElementById("cantidad").value = "";
+}
 
     function editar(i) {
       const nuevoCodigo = prompt("Nuevo código:", inventario[i].codigo);
@@ -269,5 +268,55 @@
       });
     });
   </script>
+ <script>
+  document.getElementById('product-code').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Evita que se recargue el formulario
+
+      const code = document.getElementById('product-code').value.trim();
+      const name = document.getElementById('product-name').value.trim();
+      const quantity = parseInt(document.getElementById('product-quantity').value);
+
+      if (!code || !name || isNaN(quantity) || quantity <= 0) {
+        alert('Por favor, llena todos los campos correctamente.');
+        return;
+      }
+
+      const table = document.getElementById('inventory-table').getElementsByTagName('tbody')[0];
+      const rows = table.getElementsByTagName('tr');
+      let found = false;
+
+      for (let i = 0; i < rows.length; i++) {
+        const cellCode = rows[i].getElementsByTagName('td')[0].textContent;
+        if (cellCode === code) {
+          const qtyCell = rows[i].getElementsByTagName('td')[2];
+          const currentQty = parseInt(qtyCell.textContent);
+          qtyCell.textContent = currentQty + quantity;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
+          <td>${code}</td>
+          <td>${name}</td>
+          <td>${quantity}</td>
+          <td><button class="edit-btn">Editar</button></td>
+          <td><button class="delete-btn">Eliminar</button></td>
+        `;
+      }
+
+      // Limpiar inputs
+      document.getElementById('product-code').value = '';
+      document.getElementById('product-name').value = '';
+      document.getElementById('product-quantity').value = '1';
+
+      // Enfocar nuevamente para escanear el siguiente
+      document.getElementById('product-code').focus();
+    }
+  });
+</script>
 </body>
 </html>
